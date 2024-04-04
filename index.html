@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <title>Mon application météo</title>
 </head>
@@ -27,7 +28,7 @@
                     </small>
                 </div>
                 <div class="meteo">
-                    <i class="fa-regular fa-sun"></i>
+                    <img class="icone">
                     <span class="condition">Ensoleillé</span>
                 </div>
             </div>
@@ -36,12 +37,15 @@
             <form id="locationInput">
                 <input type="text" class="search" placeholder="Rechercher une ville...">
                 <button type="submit" class="submit">
-                    <i class="fa-solid fa-location-dot"></i>
+                    <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
-            </form>
 
+            </form>
+            <button class="btn-location">Localiser ma position
+                <i class="fa-solid fa-location-dot"></i>
+            </button>
             <ul class="Ville">
-                <li class="ville">Paris</li>
+                <li class="ville">Toulouse</li>
                 <li class="ville">Londres</li>
                 <li class="ville">New York</li>
                 <li class="ville">Tokyo</li>
@@ -80,13 +84,8 @@
         const btn = document.querySelector('.submit');
         const ville = document.querySelectorAll('.ville');
 
-        let apikey = 'f1739d80d7f0995ce57277d5861a6566';
         let villeInput = 'Londres';
-        if (app && temperature && dateOutPut && heureOutPut && conditionOutPut && nomVilleOutPut && icone && cloudOutPut && humidityOutPut && windOutPut && form && search && btn) {
-            // Votre code ici
-        } else {
-            console.error('Certains éléments DOM sont manquants');
-        }
+
         ville.forEach((ville) => {
             ville.addEventListener('click', (e) => {
                 villeInput = e.target.innerHTML;
@@ -94,7 +93,6 @@
                 app.style.opacity = "0";
             });
         });
-
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (search.value.length == 0) {
@@ -104,102 +102,23 @@
                 fetchDonneesMeteo();
                 search.value = "";
                 app.style.opacity = "0";
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        let offset = data.gmtOffset;
+                        let localTime = new Date(new Date().getTime() + offset * 1000);
+                        let heure = localTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                        heureOutPut.innerHTML = heure;
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la récupération du fuseau horaire :', error);
+                    });
             }
         });
 
-        function jourDeLaSemaine(jour, mois, annee) {
-            const jourSemaine = [
-                "Dimanche",
-                "Lundi",
-                "Mardi",
-                "Mercredi",
-                "Jeudi",
-                "Vendredi",
-                "Samedi"
-            ];
-            return jourSemaine[new Date(`${annee}-${mois}-${jour}`).getDay()];
-        }
-
-        function fetchDonneesMeteo() {
-            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${villeInput}&appid=${apikey}&units=metric`)
-
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-
-                    temperature.innerHTML = `${Math.floor(data.main.temp)} °C`;
-                    conditionOutPut.innerHTML = data.weather[0].description;
-                    const date = new Date(data.dt * 1000); // Convertir la timestamp en millisecondes
-                    const a = date.getFullYear();
-                    const m = date.getMonth() + 1;
-                    const j = date.getDate();
-                    const heure = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-
-                    dateOutPut.innerHTML = `${jourDeLaSemaine(j, m, a)} ${j} ${m} ${a}`;
-                    heureOutPut.innerHTML = heure;
-                    nomVilleOutPut.innerHTML = data.name;
-                    if (icone !== null) {
-                        icone.src = `http://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
-                    }
-
-                    if (cloudOutPut) {
-                        cloudOutPut.innerHTML = data.clouds.all + "%";
-                    } else {
-                        console.error("L'élément cloudOutPut est null");
-                    }
-
-                    if (humidityOutPut) {
-                        humidityOutPut.innerHTML = data.main.humidity + "%";
-                    } else {
-                        console.error("L'élément humidityOutPut est null");
-                    }
-
-                    if (windOutPut) {
-                        windOutPut.innerHTML = (data.wind.speed * 3.6).toFixed(2) + " km/h";
-                    } else {
-                        console.error("L'élément windOutPut est null");
-                    }
-
-
-
-                    const code = data.weather[0].id;
-                    let heureDuJour = "jour";
-
-                    if (code == 1000) {
-                        app.style.backgroundImage = `url(./images/${heureDuJour}/clear.jpg)`;
-                        btn.style.background = "#e5ba92";
-                        if (heureDuJour == "nuit") {
-                            btn.style.background = "#181e27";
-                        }
-                    } else if (code >= 200 && code < 600) {
-                        app.style.backgroundImage = `url(./images/${heureDuJour}/rain.jpg)`;
-                        btn.style.background = "#647d75";
-                        if (heureDuJour == "nuit") {
-                            btn.style.background = "#325c80";
-                        }
-                    } else if (code >= 600 && code < 700) {
-                        app.style.backgroundImage = `url(./images/${heureDuJour}/snow.jpg)`;
-                        btn.style.background = "#4d72aa";
-                        if (heureDuJour == "nuit") {
-                            btn.style.background = "#1b1b1b";
-                        }
-                    } else if (code >= 700 && code < 800) {
-                        app.style.backgroundImage = `url(./images/${heureDuJour}/mist.jpg)`;
-                        btn.style.background = "#181e27";
-                    } else if (code >= 801 && code <= 804) {
-                        app.style.backgroundImage = `url(./images/${heureDuJour}/cloudy.jpg)`;
-                        btn.style.background = "#181e27";
-                    }
-
-                    app.style.opacity = "1";
-                })
-
-        }
-
-        fetchDonneesMeteo();
-
-        app.style.opacity = "1";
     </script>
+    <script src="function.js"></script>
     <script src="https://kit.fontawesome.com/6cc5d9a1eb.js" crossorigin="anonymous"></script>
 </body>
 
