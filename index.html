@@ -69,53 +69,7 @@
         </div>
     </div>
     <script>
-        const app = document.querySelector('.application-meteo');
-        const temperature = document.querySelector('.temperature');
-        const dateOutPut = document.querySelector('.date');
-        const heureOutPut = document.querySelector('.heure');
-        const conditionOutPut = document.querySelector('.condition');
-        const nomVilleOutPut = document.querySelector('.nomVille');
-        const icone = document.querySelector('.icone');
-        const cloudOutPut = document.querySelector('.nuage');
-        const humidityOutPut = document.querySelector('.humidite');
-        const windOutPut = document.querySelector('.vent');
-        const form = document.querySelector('#locationInput');
-        const search = document.querySelector('.search');
-        const btn = document.querySelector('.submit');
-        const ville = document.querySelectorAll('.ville');
 
-        let villeInput = 'Londres';
-
-        ville.forEach((ville) => {
-            ville.addEventListener('click', (e) => {
-                villeInput = e.target.innerHTML;
-                fetchDonneesMeteo();
-                app.style.opacity = "0";
-            });
-        });
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (search.value.length == 0) {
-                alert('Ajoutez une ville dans la barre de recherche');
-            } else {
-                villeInput = search.value;
-                fetchDonneesMeteo();
-                search.value = "";
-                app.style.opacity = "0";
-
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        let offset = data.gmtOffset;
-                        let localTime = new Date(new Date().getTime() + offset * 1000);
-                        let heure = localTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-                        heureOutPut.innerHTML = heure;
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la récupération du fuseau horaire :', error);
-                    });
-            }
-        });
 
     </script>
     <script src="function.js"></script>
