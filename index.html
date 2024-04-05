@@ -14,6 +14,7 @@
 </head>
 
 <body>
+
     <div class="application-meteo">
         <div class="container">
             <h3 class="brand"> La météo </h3>
@@ -36,7 +37,7 @@
         <div class="panel">
             <form id="locationInput">
                 <input type="text" class="search" placeholder="Rechercher une ville...">
-                <button type="submit" class="submit">
+                <button type="submit" class="submit" id="addCityBtn">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
 
@@ -44,11 +45,8 @@
             <button class="btn-location">Localiser ma position
                 <i class="fa-solid fa-location-dot"></i>
             </button>
-            <ul class="Ville">
-                <li class="ville">Toulouse</li>
-                <li class="ville">Londres</li>
-                <li class="ville">New York</li>
-                <li class="ville">Tokyo</li>
+            <ul class="ville" id="cityList">
+
             </ul>
 
             <ul class="details">

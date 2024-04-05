@@ -22,17 +22,23 @@ ville.forEach((ville) => {
         app.style.opacity = "0";
     });
 });
+
 form.addEventListener('submit', (e) => {
     e.preventDefault();
     if (search.value.length == 0) {
         alert('Ajoutez une ville dans la barre de recherche');
     } else {
         villeInput = search.value;
+        const nouvelleVille = search.value;
+        let villeStockees = JSON.parse(window.localStorage.getItem("ville")) || []; // Récupérer les villes déjà stockées
+        villeStockees.push(nouvelleVille); // Ajouter la nouvelle ville à la liste
+        window.localStorage.setItem("ville", JSON.stringify(villeStockees)); // Enregistrer la liste mise à jour dans le localStorage
+        addCity(nouvelleVille);
         fetchDonneesMeteo();
         search.value = "";
         app.style.opacity = "0";
 
-        fetch(url)
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=015b55e1c669b4fcb83d93a285b92ab1&units=metric`)
             .then(response => response.json())
             .then(data => {
                 let offset = data.gmtOffset;
@@ -259,3 +265,49 @@ if (btnLocation) {
 }
 
 //fin de fonction pour localiser position
+
+function addCity(cityName) {
+    console.log("Ajout de la ville :", cityName);
+    const cityList = document.getElementById('cityList');
+    const cityElement = document.createElement('li');
+    cityElement.classList.add('ville');
+    cityElement.textContent = cityName;
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Supprimer';
+    deleteBtn.classList.add('delete-btn');
+    deleteBtn.addEventListener('click', () => deleteCity(cityName));
+    cityElement.appendChild(deleteBtn);
+    cityList.appendChild(cityElement);
+}
+
+// Fonction pour supprimer une ville
+function deleteCity(cityName) {
+    const cityList = document.getElementById('cityList');
+    const cityElement = cityList.querySelector(`li.ville:contains(${cityName})`);
+    cityElement.removeItem();
+
+    // Mettre à jour le stockage local en retirant la ville
+    const cities = JSON.parse(window.localStorage.getItem('ville')) || [];
+    const updatedCities = cities.filter(city => city !== cityName);
+    window.localStorage.setItem('ville', JSON.stringify(updatedCities));
+}
+
+// Associer le bouton "Ajouter" à la fonction pour ajouter une ville
+const addCityBtn = document.getElementById('addCityBtn');
+addCityBtn.addEventListener('click', () => {
+    const addCityInput = document.getElementById('addCityInput');
+    const cityName = addCityInput.value.trim();
+    if (cityName !== '') {
+        addCity(cityName);
+        addCityInput.value = ''; // Effacer le champ de saisie après l'ajout
+    }
+});
+
+// Charger les villes sauvegardées dans le stockage local au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+    const cities = JSON.parse(window.localStorage.getItem('ville')) || [];
+    console.log("Ville récupérées depuis le stockage local :", cities);
+    cities.forEach(city => addCity(city));
+});
+
+
