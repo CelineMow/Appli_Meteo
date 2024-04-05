@@ -12,6 +12,8 @@ const form = document.querySelector('#locationInput');
 const search = document.querySelector('.search');
 const btn = document.querySelector('.submit');
 const ville = document.querySelectorAll('.ville');
+let latitude = 0;
+let longitude = 0;
 
 let villeInput = 'Londres';
 
@@ -90,9 +92,12 @@ function fetchDonneesMeteo() {
 
         .then(response => response.json())
         .then(data => {
-            console.log(data);
 
-            temperature.innerHTML = `${Math.floor(data.main.temp)} °C`;
+            if (data && data.main && typeof data.main.temp !== 'undefined') {
+                temperature.innerHTML = `${Math.floor(data.main.temp)} °C`;
+            } else {
+                console.error("Erreur : La structure des données ne correspond pas au format attendu.");
+            }
             conditionOutPut.innerHTML = data.weather[0].description;
             let date = new Date(data.dt * 1000);
             let a = date.getFullYear();
@@ -167,8 +172,8 @@ function getPosition() {
 
 function showPosition(position) {
     console.log("Position récupérée avec succès :", position);
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
+    latitude = position.coords.latitude;
+    longitude = position.coords.longitude;
     // Utiliser les coordonnées pour récupérer les données météorologiques
     fetchDonneesMeteoByCoords(latitude, longitude);
 }
@@ -196,7 +201,6 @@ function fetchDonneesMeteoByCoords(latitude, longitude) {
         .then(response => response.json())
         .then(data => {
             console.log(data);
-
             temperature.innerHTML = `${Math.floor(data.main.temp)} °C`;
             conditionOutPut.innerHTML = data.weather[0].description;
             let date = new Date(data.dt * 1000);
@@ -256,7 +260,7 @@ function fetchDonneesMeteoByCoords(latitude, longitude) {
         })
     setInterval(showDate, 1000);
 }
-fetchDonneesMeteoByCoords();
+fetchDonneesMeteoByCoords(latitude, longitude);
 app.style.opacity = "1";
 
 const btnLocation = document.querySelector('.btn-location');
