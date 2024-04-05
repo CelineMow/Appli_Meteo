@@ -26,6 +26,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
+function showDate() {
+    let date = new Date()
+    let h = date.getHours();
+    let m = date.getMinutes();
+    let s = date.getSeconds();
+    if (h < 10) { h = '0' + h; }
+    if (m < 10) { m = '0' + m; }
+    if (s < 10) { s = '0' + s; }
+    let time = h + ':' + m //+ ':' + s
+    heureOutPut.innerHTML = time;
+    return time;
+}
+
 let villeInput = 'Londres';
 
 form.addEventListener('submit', (e) => {
@@ -60,7 +73,7 @@ form.addEventListener('submit', (e) => {
 
 
 function fetchDonneesMeteo() {
-    console.log('pourquoi 2', villeInput)
+
     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${villeInput}&appid=015b55e1c669b4fcb83d93a285b92ab1&units=metric`)
 
         .then(response => response.json())
@@ -127,10 +140,10 @@ function fetchDonneesMeteo() {
 
             app.style.opacity = "1";
         })
-    setInterval(showDate, 1000);
 }
 
-console.log('tata')
+setInterval(showDate, 1000);
+
 fetchDonneesMeteo();
 app.style.opacity = "1";
 
