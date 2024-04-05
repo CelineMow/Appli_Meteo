@@ -12,18 +12,20 @@ const form = document.querySelector('#locationInput');
 const search = document.querySelector('.search');
 const btn = document.querySelector('.submit');
 const ville = document.querySelectorAll('.ville');
+
 let latitude = 0;
 let longitude = 0;
 
-let villeInput = 'Londres';
+document.addEventListener('DOMContentLoaded', function () {
+    let panel = document.getElementById('panel');
 
-ville.forEach((ville) => {
-    ville.addEventListener('click', (e) => {
-        villeInput = e.target.innerHTML;
-        fetchDonneesMeteo();
-        app.style.opacity = "0";
+    panel.addEventListener('click', function (event) {
+        console.log(event.target)
     });
+
 });
+
+let villeInput = 'Londres';
 
 form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -31,6 +33,7 @@ form.addEventListener('submit', (e) => {
         alert('Ajoutez une ville dans la barre de recherche');
     } else {
         villeInput = search.value;
+        console.log('toto')
         const nouvelleVille = search.value;
         let villeStockees = JSON.parse(window.localStorage.getItem("ville")) || []; // Récupérer les villes déjà stockées
         villeStockees.push(nouvelleVille); // Ajouter la nouvelle ville à la liste
@@ -88,6 +91,7 @@ function showDate() {
 }
 
 function fetchDonneesMeteo() {
+    console.log('pourquoi 2', villeInput)
     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${villeInput}&appid=015b55e1c669b4fcb83d93a285b92ab1&units=metric`)
 
         .then(response => response.json())
@@ -156,6 +160,8 @@ function fetchDonneesMeteo() {
         })
     setInterval(showDate, 1000);
 }
+
+console.log('tata')
 fetchDonneesMeteo();
 app.style.opacity = "1";
 
@@ -280,6 +286,7 @@ function addCity(cityName) {
     deleteBtn.textContent = 'Supprimer';
     deleteBtn.classList.add('delete-btn');
     deleteBtn.addEventListener('click', () => deleteCity(cityName));
+    deleteBtn.addEventListener('click', () => console.log(cityName));
     cityElement.appendChild(deleteBtn);
     cityList.appendChild(cityElement);
 }
