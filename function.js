@@ -65,20 +65,14 @@ function fetchDonneesMeteo() {
 fetchDonneesMeteo();
 app.style.opacity = "1";
 
-function Chargement() {
-    if (listeVille !== null) {
-        for (i = 0; i < listeVille.length; i++) {
-            fetchDonneesMeteo(listeVille[i]);
-        }
-    }
-}
-
 window.addEventListener('load', () => {
     let villesStockees = localStorage.getItem('ville');
     if (villesStockees) {
         listeVille = JSON.parse(villesStockees);
-        afficherVilles();
+    } else {
+        listeVille = [];
     }
+    afficherVilles();
 });
 
 function afficherVilles() {
