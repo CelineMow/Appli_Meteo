@@ -29,19 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 let villeInput = 'Londres';
 
-function showDate() {
-    let date = new Date()
-    let h = date.getHours();
-    let m = date.getMinutes();
-    let s = date.getSeconds();
-    if (h < 10) { h = '0' + h; }
-    if (m < 10) { m = '0' + m; }
-    if (s < 10) { s = '0' + s; }
-    let time = h + ':' + m //+ ':' + s
-    heureOutPut.innerHTML = time;
-    return time;
-}
-
 form.addEventListener('submit', (e) => {
     e.preventDefault();
     if (search.value.length == 0) {
@@ -133,16 +120,6 @@ function afficherMeteo() {
     app.style.opacity = "1";
 }
 
-function showDate() {
-    let now = new Date();
-    let data = weatherData;
-    conditionOutPut.innerHTML = data.weather[0].description;
-
-    dateOutPut.innerHTML = `${jourDeLaSemaine(now.getDay(), now.getMonth() + 1, now.getFullYear())} ${now.getDate()} ${getMonthName(now.getMonth())} ${now.getFullYear()}`;
-    heureOutPut.innerHTML = `${now.getHours()} : ${now.getMinutes()} : ${now.getSeconds()}`;
-    nomVilleOutPut.innerHTML = data.name;
-}
-
 setInterval(() => {
     showDate();
 }, 1000);
@@ -170,69 +147,70 @@ function showPosition(position) {
 }
 
 function fetchDonneesMeteoByCoords(latitude, longitude) {
+
     fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=015b55e1c669b4fcb83d93a285b92ab1&units=metric`)
+
         .then(response => response.json())
         .then(data => {
-            console.log(data);
-            temperature.innerHTML = `${Math.floor(data.main.temp)} °C`;
-            conditionOutPut.innerHTML = data.weather[0].description;
-            let date = new Date(data.dt * 1000);
-            let a = date.getFullYear();
-            let m = date.getMonth() + 1;
-            let j = date.getDate();
-            let heure = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-
-            dateOutPut.innerHTML = `${jourDeLaSemaine(j, m + 1, a)} ${j} ${getMonthName(m)} ${a}`;
-            heureOutPut.innerHTML = heure;
-            nomVilleOutPut.innerHTML = data.name;
-            if (icone !== null) {
-                icone.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-            }
-
-            if (cloudOutPut) {
-                cloudOutPut.innerHTML = data.clouds.all + "%";
-            } else {
-                console.error("L'élément cloudOutPut est null");
-            }
-
-            if (humidityOutPut) {
-                humidityOutPut.innerHTML = data.main.humidity + "%";
-            } else {
-                console.error("L'élément humidityOutPut est null");
-            }
-
-            if (windOutPut) {
-                windOutPut.innerHTML = (data.wind.speed * 3.6).toFixed(2) + " km/h";
-            } else {
-                console.error("L'élément windOutPut est null");
-            }
-
-            const code = data.weather[0].id;
-            let heureDuJour = "jour";
-
-            if (code == 800) {
-                app.style.backgroundImage = `url(./images/${heureDuJour}/clear.jpg)`;
-
-            } else if (code >= 200 && code < 300) {
-                app.style.backgroundImage = `url(./images/${heureDuJour}/storm.jpg)`;
-
-            } else if (code >= 300 && code < 600) {
-                app.style.backgroundImage = `url(./images/${heureDuJour}/rain.jpg)`;
-
-            } else if (code >= 600 && code < 700) {
-                app.style.backgroundImage = `url(./images/${heureDuJour}/snow.jpg)`;
-
-            } else if (code >= 700 && code < 800) {
-                app.style.backgroundImage = `url(./images/${heureDuJour}/mist.jpg)`;
-
-            } else if (code >= 801 && code <= 804) {
-                app.style.backgroundImage = `url(./images/${heureDuJour}/cloudy.jpg)`;
-            }
-
-            app.style.opacity = "1";
-        })
-    setInterval(showDate, 1000);
+            weatherData = data;
+            afficherMeteoByCoords();
+        });
 }
+
+function afficherMeteoByCoords() {
+    let data = weatherData;
+    temperature.innerHTML = `${Math.floor(data.main.temp)} °C`;
+    if (icone !== null) {
+        icone.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+    }
+
+    if (cloudOutPut) {
+        cloudOutPut.innerHTML = data.clouds.all + "%";
+    } else {
+        console.error("L'élément cloudOutPut est null");
+    }
+
+    if (humidityOutPut) {
+        humidityOutPut.innerHTML = data.main.humidity + "%";
+    } else {
+        console.error("L'élément humidityOutPut est null");
+    }
+
+    if (windOutPut) {
+        windOutPut.innerHTML = (data.wind.speed * 3.6).toFixed(2) + " km/h";
+    } else {
+        console.error("L'élément windOutPut est null");
+    }
+
+    const code = data.weather[0].id;
+    let heureDuJour = "jour";
+
+    if (code == 800) {
+        app.style.backgroundImage = `url(./images/${heureDuJour}/clear.jpg)`;
+
+    } else if (code >= 200 && code < 300) {
+        app.style.backgroundImage = `url(./images/${heureDuJour}/storm.jpg)`;
+
+    } else if (code >= 300 && code < 600) {
+        app.style.backgroundImage = `url(./images/${heureDuJour}/rain.jpg)`;
+
+    } else if (code >= 600 && code < 700) {
+        app.style.backgroundImage = `url(./images/${heureDuJour}/snow.jpg)`;
+
+    } else if (code >= 700 && code < 800) {
+        app.style.backgroundImage = `url(./images/${heureDuJour}/mist.jpg)`;
+
+    } else if (code >= 801 && code <= 804) {
+        app.style.backgroundImage = `url(./images/${heureDuJour}/cloudy.jpg)`;
+    }
+
+    app.style.opacity = "1";
+}
+
+setInterval(() => {
+    showDate();
+}, 1000);
+
 fetchDonneesMeteoByCoords(latitude, longitude);
 app.style.opacity = "1";
 

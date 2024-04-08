@@ -37,3 +37,16 @@ function showError(error) {
             break;
     }
 }
+
+function showDate() {
+    let now = new Date();
+    let data = weatherData;
+    conditionOutPut.innerHTML = data.weather[0].description;
+
+    let hours = now.getHours().toString().padStart(2, '0');
+    let minutes = now.getMinutes().toString().padStart(2, '0');
+
+    dateOutPut.innerHTML = `${jourDeLaSemaine(now.getDay(), now.getMonth() + 1, now.getFullYear())} ${now.getDate()} ${getMonthName(now.getMonth())} ${now.getFullYear()}`;
+    heureOutPut.innerHTML = `${hours} : ${minutes}`;
+    nomVilleOutPut.innerHTML = data.name;
+}
