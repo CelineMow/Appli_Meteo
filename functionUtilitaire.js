@@ -50,6 +50,7 @@ function showDate() {
     nomVilleOutPut.innerHTML = data.name;
 }
 
+
 function afficherMeteoByCoords() {
     let data = weatherData;
     temperature.innerHTML = `${Math.floor(data.main.temp)} °C`;

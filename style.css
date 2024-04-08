@@ -189,6 +189,20 @@ h3 {
     color: #fff;
 }
 
+button.delete-button {
+    position: absolute;
+    right: 30px;
+
+    font-size: 1em;
+    background-color: transparent;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+}
+
+button.delete-button:hover {
+    color: #fff;
+}
 
 .brand {
     font-family: Dancing Script;

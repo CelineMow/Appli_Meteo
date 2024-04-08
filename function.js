@@ -18,6 +18,7 @@ let longitude = 0;
 let weatherData;
 
 let villeInput = 'Londres';
+let listeVille = [];
 
 form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -25,7 +26,6 @@ form.addEventListener('submit', (e) => {
         alert('Ajoutez une ville dans la barre de recherche');
     } else {
         villeInput = search.value;
-        const nouvelleVille = search.value;
         fetchDonneesMeteo();
         search.value = "";
         app.style.opacity = "0";
@@ -41,9 +41,8 @@ form.addEventListener('submit', (e) => {
             .catch(error => {
                 console.error('Erreur lors de la récupération du fuseau horaire :', error);
             });
-    }
+    };
 });
-
 
 function fetchDonneesMeteo() {
 
@@ -53,11 +52,74 @@ function fetchDonneesMeteo() {
         .then(data => {
             weatherData = data;
             afficherMeteo();
+            const villeExistante = listeVille.includes(villeInput);
+            if (!villeExistante) {
+                // Ajouter la nouvelle ville à la liste et mettre à jour le local storage
+                listeVille.push(villeInput);
+                localStorage.setItem('ville', JSON.stringify(listeVille));
+                afficherVilles();
+            };
         });
-}
+};
 
 fetchDonneesMeteo();
 app.style.opacity = "1";
+
+function Chargement() {
+    if (listeVille !== null) {
+        for (i = 0; i < listeVille.length; i++) {
+            fetchDonneesMeteo(listeVille[i]);
+        }
+    }
+}
+
+window.addEventListener('load', () => {
+    let villesStockees = localStorage.getItem('ville');
+    if (villesStockees) {
+        listeVille = JSON.parse(villesStockees);
+        afficherVilles();
+    }
+});
+
+function afficherVilles() {
+    const listeVillesElement = document.querySelector('.ville');
+    listeVillesElement.innerHTML = '';
+    listeVille.forEach(ville => {
+        const villeNomCapitalized = ville.charAt(0).toUpperCase() + ville.slice(1);
+        const villeElement = document.createElement('li');
+        villeElement.textContent = villeNomCapitalized; // Utiliser villeNomCapitalized au lieu de ville
+        villeElement.addEventListener('click', () => {
+            // Appeler la fonction pour afficher les données météorologiques pour cette ville
+            villeInput = ville;
+            fetchDonneesMeteo();
+        });
+        boutonSuppression(villeElement, ville);
+
+        listeVillesElement.appendChild(villeElement);
+    });
+}
+
+function boutonSuppression(villeElement, villeASupprimer) {
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'X';
+    deleteButton.classList.add('delete-button');
+    deleteButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Empêcher la propagation de l'événement de clic à l'élément de la ville
+        const index = listeVille.indexOf(villeASupprimer);
+        if (index !== -1) {
+            listeVille.splice(index, 1);
+            localStorage.setItem('ville', JSON.stringify(listeVille));
+            // Mettre à jour la liste des villes affichées sur la page
+            afficherVilles();
+        }
+    });
+    villeElement.appendChild(deleteButton); // Ajouter le bouton de suppression à l'élément de la ville
+}
+
+addEventListener('keypress', function (event) {
+    if (event.key === "Enter") {
+    }
+})
 
 // Fonction pour localiser position
 
