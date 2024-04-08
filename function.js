@@ -81,9 +81,9 @@ function afficherVilles() {
     listeVille.forEach(ville => {
         const villeNomCapitalized = ville.charAt(0).toUpperCase() + ville.slice(1);
         const villeElement = document.createElement('li');
-        villeElement.textContent = villeNomCapitalized; // Utiliser villeNomCapitalized au lieu de ville
+        villeElement.textContent = villeNomCapitalized;
         villeElement.addEventListener('click', () => {
-            // Appeler la fonction pour afficher les données météorologiques pour cette ville
+
             villeInput = ville;
             fetchDonneesMeteo();
         });
@@ -98,16 +98,15 @@ function boutonSuppression(villeElement, villeASupprimer) {
     deleteButton.textContent = 'X';
     deleteButton.classList.add('delete-button');
     deleteButton.addEventListener('click', (event) => {
-        event.stopPropagation(); // Empêcher la propagation de l'événement de clic à l'élément de la ville
+        event.stopPropagation();
         const index = listeVille.indexOf(villeASupprimer);
         if (index !== -1) {
             listeVille.splice(index, 1);
             localStorage.setItem('ville', JSON.stringify(listeVille));
-            // Mettre à jour la liste des villes affichées sur la page
             afficherVilles();
         }
     });
-    villeElement.appendChild(deleteButton); // Ajouter le bouton de suppression à l'élément de la ville
+    villeElement.appendChild(deleteButton);
 }
 
 addEventListener('keypress', function (event) {
