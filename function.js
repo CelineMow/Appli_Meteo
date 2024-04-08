@@ -17,16 +17,6 @@ let latitude = 0;
 let longitude = 0;
 let weatherData;
 
-document.addEventListener('DOMContentLoaded', function () {
-    let panel = document.getElementById('panel');
-
-    panel.addEventListener('click', function (event) {
-        console.log(event.target, 'toto')
-
-    });
-
-});
-
 let villeInput = 'Londres';
 
 form.addEventListener('submit', (e) => {
@@ -36,10 +26,6 @@ form.addEventListener('submit', (e) => {
     } else {
         villeInput = search.value;
         const nouvelleVille = search.value;
-        let villeStockees = JSON.parse(window.localStorage.getItem("ville")) || []; // Récupérer les villes déjà stockées
-        villeStockees.push(nouvelleVille); // Ajouter la nouvelle ville à la liste
-        window.localStorage.setItem("ville", JSON.stringify(villeStockees)); // Enregistrer la liste mise à jour dans le localStorage
-        addCity(nouvelleVille);
         fetchDonneesMeteo();
         search.value = "";
         app.style.opacity = "0";
@@ -69,60 +55,6 @@ function fetchDonneesMeteo() {
             afficherMeteo();
         });
 }
-
-function afficherMeteo() {
-    let data = weatherData;
-    temperature.innerHTML = `${Math.floor(data.main.temp)} °C`;
-    if (icone !== null) {
-        icone.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-    }
-
-    if (cloudOutPut) {
-        cloudOutPut.innerHTML = data.clouds.all + "%";
-    } else {
-        console.error("L'élément cloudOutPut est null");
-    }
-
-    if (humidityOutPut) {
-        humidityOutPut.innerHTML = data.main.humidity + "%";
-    } else {
-        console.error("L'élément humidityOutPut est null");
-    }
-
-    if (windOutPut) {
-        windOutPut.innerHTML = (data.wind.speed * 3.6).toFixed(2) + " km/h";
-    } else {
-        console.error("L'élément windOutPut est null");
-    }
-
-    const code = data.weather[0].id;
-    let heureDuJour = "jour";
-
-    if (code == 800) {
-        app.style.backgroundImage = `url(./images/${heureDuJour}/clear.jpg)`;
-
-    } else if (code >= 200 && code < 300) {
-        app.style.backgroundImage = `url(./images/${heureDuJour}/storm.jpg)`;
-
-    } else if (code >= 300 && code < 600) {
-        app.style.backgroundImage = `url(./images/${heureDuJour}/rain.jpg)`;
-
-    } else if (code >= 600 && code < 700) {
-        app.style.backgroundImage = `url(./images/${heureDuJour}/snow.jpg)`;
-
-    } else if (code >= 700 && code < 800) {
-        app.style.backgroundImage = `url(./images/${heureDuJour}/mist.jpg)`;
-
-    } else if (code >= 801 && code <= 804) {
-        app.style.backgroundImage = `url(./images/${heureDuJour}/cloudy.jpg)`;
-    }
-
-    app.style.opacity = "1";
-}
-
-setInterval(() => {
-    showDate();
-}, 1000);
 
 fetchDonneesMeteo();
 app.style.opacity = "1";
@@ -157,60 +89,6 @@ function fetchDonneesMeteoByCoords(latitude, longitude) {
         });
 }
 
-function afficherMeteoByCoords() {
-    let data = weatherData;
-    temperature.innerHTML = `${Math.floor(data.main.temp)} °C`;
-    if (icone !== null) {
-        icone.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-    }
-
-    if (cloudOutPut) {
-        cloudOutPut.innerHTML = data.clouds.all + "%";
-    } else {
-        console.error("L'élément cloudOutPut est null");
-    }
-
-    if (humidityOutPut) {
-        humidityOutPut.innerHTML = data.main.humidity + "%";
-    } else {
-        console.error("L'élément humidityOutPut est null");
-    }
-
-    if (windOutPut) {
-        windOutPut.innerHTML = (data.wind.speed * 3.6).toFixed(2) + " km/h";
-    } else {
-        console.error("L'élément windOutPut est null");
-    }
-
-    const code = data.weather[0].id;
-    let heureDuJour = "jour";
-
-    if (code == 800) {
-        app.style.backgroundImage = `url(./images/${heureDuJour}/clear.jpg)`;
-
-    } else if (code >= 200 && code < 300) {
-        app.style.backgroundImage = `url(./images/${heureDuJour}/storm.jpg)`;
-
-    } else if (code >= 300 && code < 600) {
-        app.style.backgroundImage = `url(./images/${heureDuJour}/rain.jpg)`;
-
-    } else if (code >= 600 && code < 700) {
-        app.style.backgroundImage = `url(./images/${heureDuJour}/snow.jpg)`;
-
-    } else if (code >= 700 && code < 800) {
-        app.style.backgroundImage = `url(./images/${heureDuJour}/mist.jpg)`;
-
-    } else if (code >= 801 && code <= 804) {
-        app.style.backgroundImage = `url(./images/${heureDuJour}/cloudy.jpg)`;
-    }
-
-    app.style.opacity = "1";
-}
-
-setInterval(() => {
-    showDate();
-}, 1000);
-
 fetchDonneesMeteoByCoords(latitude, longitude);
 app.style.opacity = "1";
 
@@ -221,51 +99,5 @@ if (btnLocation) {
 
 //fin de fonction pour localiser position
 
-function addCity(cityName) {
-    console.log("Ajout de la ville :", cityName);
-    const cityList = document.getElementById('cityList');
-    const cityElement = document.createElement('li');
-
-    cityElement.innerHTML = cityName
-    cityElement.classList.add('ville');
-    // cityElement.textContent = cityName;
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Supprimer';
-    deleteBtn.classList.add('delete-btn');
-    deleteBtn.addEventListener('click', () => deleteCity(cityName));
-
-    cityElement.appendChild(deleteBtn);
-    cityList.appendChild(cityElement);
-}
-
-// Fonction pour supprimer une ville
-function deleteCity(cityName) {
-    const cityList = document.getElementById('cityList');
-    const cityElement = cityList.querySelector(`li.ville:contains(${cityName})`);
-    cityElement.removeItem();
-
-    // Mettre à jour le stockage local en retirant la ville
-    const cities = JSON.parse(window.localStorage.getItem('ville')) || [];
-    const updatedCities = cities.filter(city => city !== cityName);
-    window.localStorage.setItem('ville', JSON.stringify(updatedCities));
-}
-
-// Associer le bouton "Ajouter" à la fonction pour ajouter une ville
-const addCityBtn = document.getElementById('addCityBtn');
-addCityBtn.addEventListener('click', () => {
-    const addCityInput = document.getElementById('addCityInput');
-    const cityName = addCityInput.value.trim();
-    if (cityName !== '') {
-        addCity(cityName);
-        addCityInput.value = ''; // Effacer le champ de saisie après l'ajout
-    }
-});
-
-// Charger les villes sauvegardées dans le stockage local au chargement de la page
-document.addEventListener('DOMContentLoaded', () => {
-    const cities = JSON.parse(window.localStorage.getItem('ville')) || [];
-    console.log("Ville récupérées depuis le stockage local :", cities);
-    cities.forEach(city => addCity(city));
-});
 
 
