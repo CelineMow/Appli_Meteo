@@ -15,6 +15,7 @@ const ville = document.querySelectorAll('.ville');
 
 let latitude = 0;
 let longitude = 0;
+let weatherData;
 
 document.addEventListener('DOMContentLoaded', function () {
     let panel = document.getElementById('panel');
@@ -25,6 +26,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
+
+let villeInput = 'Londres';
 
 function showDate() {
     let date = new Date()
@@ -39,15 +42,12 @@ function showDate() {
     return time;
 }
 
-let villeInput = 'Londres';
-
 form.addEventListener('submit', (e) => {
     e.preventDefault();
     if (search.value.length == 0) {
         alert('Ajoutez une ville dans la barre de recherche');
     } else {
         villeInput = search.value;
-        console.log('toto')
         const nouvelleVille = search.value;
         let villeStockees = JSON.parse(window.localStorage.getItem("ville")) || []; // Récupérer les villes déjà stockées
         villeStockees.push(nouvelleVille); // Ajouter la nouvelle ville à la liste
@@ -78,71 +78,74 @@ function fetchDonneesMeteo() {
 
         .then(response => response.json())
         .then(data => {
-
-            if (data && data.main && typeof data.main.temp !== 'undefined') {
-                temperature.innerHTML = `${Math.floor(data.main.temp)} °C`;
-            } else {
-                console.error("Erreur : La structure des données ne correspond pas au format attendu.");
-            }
-            conditionOutPut.innerHTML = data.weather[0].description;
-            let date = new Date(data.dt * 1000);
-            let a = date.getFullYear();
-            let m = date.getMonth() + 1;
-            let j = date.getDate();
-            let heure = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-
-            dateOutPut.innerHTML = `${jourDeLaSemaine(j, m + 1, a)} ${j} ${getMonthName(m)} ${a}`;
-            heureOutPut.innerHTML = heure;
-            nomVilleOutPut.innerHTML = data.name;
-            if (icone !== null) {
-                icone.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-            }
-
-            if (cloudOutPut) {
-                cloudOutPut.innerHTML = data.clouds.all + "%";
-            } else {
-                console.error("L'élément cloudOutPut est null");
-            }
-
-            if (humidityOutPut) {
-                humidityOutPut.innerHTML = data.main.humidity + "%";
-            } else {
-                console.error("L'élément humidityOutPut est null");
-            }
-
-            if (windOutPut) {
-                windOutPut.innerHTML = (data.wind.speed * 3.6).toFixed(2) + " km/h";
-            } else {
-                console.error("L'élément windOutPut est null");
-            }
-
-            const code = data.weather[0].id;
-            let heureDuJour = "jour";
-
-            if (code == 800) {
-                app.style.backgroundImage = `url(./images/${heureDuJour}/clear.jpg)`;
-
-            } else if (code >= 200 && code < 300) {
-                app.style.backgroundImage = `url(./images/${heureDuJour}/storm.jpg)`;
-
-            } else if (code >= 300 && code < 600) {
-                app.style.backgroundImage = `url(./images/${heureDuJour}/rain.jpg)`;
-
-            } else if (code >= 600 && code < 700) {
-                app.style.backgroundImage = `url(./images/${heureDuJour}/snow.jpg)`;
-
-            } else if (code >= 700 && code < 800) {
-                app.style.backgroundImage = `url(./images/${heureDuJour}/mist.jpg)`;
-
-            } else if (code >= 801 && code <= 804) {
-                app.style.backgroundImage = `url(./images/${heureDuJour}/cloudy.jpg)`;
-            }
-
-            app.style.opacity = "1";
-        })
+            weatherData = data;
+            afficherMeteo();
+        });
 }
 
-setInterval(showDate, 1000);
+function afficherMeteo() {
+    let data = weatherData;
+    temperature.innerHTML = `${Math.floor(data.main.temp)} °C`;
+    if (icone !== null) {
+        icone.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+    }
+
+    if (cloudOutPut) {
+        cloudOutPut.innerHTML = data.clouds.all + "%";
+    } else {
+        console.error("L'élément cloudOutPut est null");
+    }
+
+    if (humidityOutPut) {
+        humidityOutPut.innerHTML = data.main.humidity + "%";
+    } else {
+        console.error("L'élément humidityOutPut est null");
+    }
+
+    if (windOutPut) {
+        windOutPut.innerHTML = (data.wind.speed * 3.6).toFixed(2) + " km/h";
+    } else {
+        console.error("L'élément windOutPut est null");
+    }
+
+    const code = data.weather[0].id;
+    let heureDuJour = "jour";
+
+    if (code == 800) {
+        app.style.backgroundImage = `url(./images/${heureDuJour}/clear.jpg)`;
+
+    } else if (code >= 200 && code < 300) {
+        app.style.backgroundImage = `url(./images/${heureDuJour}/storm.jpg)`;
+
+    } else if (code >= 300 && code < 600) {
+        app.style.backgroundImage = `url(./images/${heureDuJour}/rain.jpg)`;
+
+    } else if (code >= 600 && code < 700) {
+        app.style.backgroundImage = `url(./images/${heureDuJour}/snow.jpg)`;
+
+    } else if (code >= 700 && code < 800) {
+        app.style.backgroundImage = `url(./images/${heureDuJour}/mist.jpg)`;
+
+    } else if (code >= 801 && code <= 804) {
+        app.style.backgroundImage = `url(./images/${heureDuJour}/cloudy.jpg)`;
+    }
+
+    app.style.opacity = "1";
+}
+
+function showDate() {
+    let now = new Date();
+    let data = weatherData;
+    conditionOutPut.innerHTML = data.weather[0].description;
+
+    dateOutPut.innerHTML = `${jourDeLaSemaine(now.getDay(), now.getMonth() + 1, now.getFullYear())} ${now.getDate()} ${getMonthName(now.getMonth())} ${now.getFullYear()}`;
+    heureOutPut.innerHTML = `${now.getHours()} : ${now.getMinutes()} : ${now.getSeconds()}`;
+    nomVilleOutPut.innerHTML = data.name;
+}
+
+setInterval(() => {
+    showDate();
+}, 1000);
 
 fetchDonneesMeteo();
 app.style.opacity = "1";
