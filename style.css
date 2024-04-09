@@ -246,14 +246,14 @@ button.delete-button:hover {
     top: 0;
     left: -250px;
     background-color: transparent;
-    padding-top: 60px;
+    padding-top: 100px;
     transition: left 0.5s ease;
 }
 
 .sidenav a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
-    font-size: 25px;
+    font-size: 1.2em;
     color: #ccc;
     display: block;
     transition: 0.3s;
@@ -277,7 +277,8 @@ button.delete-button:hover {
     position: absolute;
     top: 0;
     right: 25px;
-    font-size: 36px;
+    font-size: 1.5em;
+    padding-top: 20px;
 }
 
 
