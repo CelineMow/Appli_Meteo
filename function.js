@@ -62,7 +62,6 @@ function fetchDonneesMeteo() {
         });
 };
 
-fetchDonneesMeteo();
 app.style.opacity = "1";
 
 window.addEventListener('load', () => {
