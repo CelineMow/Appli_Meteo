@@ -37,7 +37,13 @@ function showError(error) {
     }
 }
 
+
 function showDate() {
+    if (typeof weatherData === 'undefined') {
+        console.error('weatherData is not defined');
+        return;
+    }
+
     let now = new Date();
     let data = weatherData;
     conditionOutPut.innerHTML = data.weather[0].description;
@@ -49,6 +55,9 @@ function showDate() {
     heureOutPut.innerHTML = `${hours} : ${minutes}`;
     nomVilleOutPut.innerHTML = data.name;
 }
+
+// Assurez-vous que weatherData est bien défini avant d'appeler showDate
+setInterval(showDate, 1000);
 
 
 function afficherMeteoByCoords() {
